@@ -44,6 +44,7 @@ static char MyProgName[20];
 static int g_status= 0;
 static const int SUCCESS =0;
 static const int FAIL =1;
+static char g_EchoPath[PATH_MAX+1];
 
 static void dealloc(char** args, int count)
 {
@@ -457,6 +458,12 @@ static void InitShell()
     builtin[1]="pwd";
     builtin[2]="which";
 
+    bool st = GetAbsCmdPath(g_EchoPath, "echo");
+    if (st == false)
+    {
+        // Error is already logged
+        strcpy(g_EchoPath, "/bin/echo");
+    }
 }
 
 static void trim(char* buff)
@@ -620,11 +627,8 @@ static int executeCMD(char *args[], bool isPipe)
         }
       else
       {
-         strcpy(AbsPath, "/bin/echo");
-         char echoPath[15];
-         strcpy(echoPath, "/bin/echo");
          char * BiArgs[3];
-         BiArgs[0]= echoPath;
+         BiArgs[0]= g_EchoPath;
          BiArgs[1]=NULL;
          BiArgs[2]=NULL;
         if(CmdIndex==1) // pwd
@@ -650,7 +654,7 @@ static int executeCMD(char *args[], bool isPipe)
         //        execv(echoPath, BiArgs);
             }
         }
-        execv(echoPath, BiArgs);
+        execv(BiArgs[0], BiArgs);
       }
     }
     else { /* parent process */
