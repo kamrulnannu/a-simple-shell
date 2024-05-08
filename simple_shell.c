@@ -670,7 +670,7 @@ void createPipe(char *args[])
     int fd[2];
     if(pipe(fd)<0){
         myWrite(STDERR_FILENO, "CreatePipe: Pipe Failed\n");
-        return;
+        exit(1);
     }
 
     dup2(fd[1], STDOUT_FILENO);
